@@ -5,6 +5,8 @@ const {responseReturn} = require("../utils/response");
 const {createToken} = require("../utils/createToken");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const {formidable} = require("formidable");
+const cloudinary = require("cloudinary").v2;
 
 const admin_login = async (req, res) => {
   const {email, password} = req.body;
@@ -122,11 +124,72 @@ const getUser = async (req, res) => {
   }
 };
 
+const profile_image_upload = async (req, res) => {
+  const {id} = req;
+  const form = formidable({multiples: true});
+  form.parse(req, async (err, field, files) => {
+    const {image} = files;
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+      secure: true,
+    });
+
+    try {
+      const result = await cloudinary.uploader.upload(image.filepath, {
+        folder: "profiles",
+      });
+      if (result) {
+        await sellerModel.findByIdAndUpdate(id, {
+          image: result.url,
+        });
+        responseReturn(res, 200, {
+          msg: "Upload image successfully",
+          success: true,
+          image: result.url,
+        });
+      } else {
+        responseReturn(res, 500, {error: "Upload image failed"});
+      }
+    } catch (error) {
+      responseReturn(res, 500, {error: error.message});
+    }
+  });
+};
+
+const profile_info_add = async (req, res) => {
+  const {id} = req;
+  const {shopName, division, district, sub_district, phone} = req.body;
+
+  try {
+    const info = await sellerModel.findByIdAndUpdate(id, {
+      shopInfo: {
+        shopName,
+        division,
+        district,
+        sub_district,
+        phone,
+      },
+    });
+    responseReturn(res, 200, {
+      msg: "Saved info successfully",
+      success: true,
+      info,
+    });
+  } catch (error) {
+    responseReturn(res, 500, {error: error.message});
+  }
+};
+
 const authController = {
   admin_login,
   getUser,
   seller_register,
   seller_login,
+  profile_image_upload,
+  profile_info_add,
 };
 
 module.exports = authController;

@@ -58,7 +58,21 @@ const get_category = async (req, res) => {
           name: new RegExp(searchValue, "i"),
         })
         .skip(skipPage)
-        .limit(parPage)
+        .limit(+parPage)
+        .sort({createdAt: -1});
+      const totalCategory = await categoryModel
+        .find({
+          name: new RegExp(searchValue, "i"),
+        })
+        .countDocuments();
+      responseReturn(res, 200, {totalCategory, categories});
+    } else if (!searchValue && page && parPage) {
+      const categories = await categoryModel
+        .find({
+          name: new RegExp(searchValue, "i"),
+        })
+        .skip(skipPage)
+        .limit(+parPage)
         .sort({createdAt: -1});
       const totalCategory = await categoryModel
         .find({
