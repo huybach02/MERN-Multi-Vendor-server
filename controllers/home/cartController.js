@@ -1,4 +1,5 @@
 const cartModel = require("../../models/cartModel");
+const wishlistModel = require("../../models/wishlistModel");
 const {responseReturn} = require("../../utils/response");
 const {
   mongo: {ObjectId},
@@ -35,6 +36,32 @@ const add_to_cart = async (req, res) => {
         success: true,
         cart,
       });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const add_to_wishlist = async (req, res) => {
+  const {userId, productId, name, price, image, discount, rating, slug} =
+    req.body;
+
+  try {
+    const product = await wishlistModel.findOne({productId});
+    if (product) {
+      responseReturn(res, 404, {error: "Product already in wishlist"});
+    } else {
+      await wishlistModel.create({
+        userId,
+        productId,
+        name,
+        price,
+        image,
+        discount,
+        rating,
+        slug,
+      });
+      responseReturn(res, 201, {msg: "Added to wishlist"});
     }
   } catch (error) {
     console.log(error);
@@ -145,6 +172,32 @@ const get_cart_products = async (req, res) => {
   }
 };
 
+const get_wishlist_products = async (req, res) => {
+  const {userId} = req.params;
+
+  try {
+    const wishListProducts = await wishlistModel.find({userId});
+    const wishListCount = await wishlistModel.find({userId}).countDocuments();
+    responseReturn(res, 201, {wishListCount, wishListProducts});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const delete_product_from_wishlist = async (req, res) => {
+  const {wishlistId} = req.params;
+
+  try {
+    await wishlistModel.findByIdAndDelete(wishlistId);
+    responseReturn(res, 200, {
+      msg: "Removed product from wishlist",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const delete_product_from_cart = async (req, res) => {
   const {cartId} = req.params;
 
@@ -192,6 +245,9 @@ const cartController = {
   delete_product_from_cart,
   increment_quantity,
   reduce_quantity,
+  add_to_wishlist,
+  get_wishlist_products,
+  delete_product_from_wishlist,
 };
 
 module.exports = cartController;
