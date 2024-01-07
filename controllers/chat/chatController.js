@@ -2,6 +2,7 @@ const sellerModel = require("../../models/sellerModel");
 const customerModel = require("../../models/customerModel");
 const sellerToCustomerModel = require("../../models/chat/sellerToCustomerModel");
 const sellerCustomerMessage = require("../../models/chat/sellerCustomerMessage");
+const adminSellerMessage = require("../../models/chat/adminSellerMessage");
 const {responseReturn} = require("../../utils/response");
 
 const add_customer_friend = async (req, res) => {
@@ -292,12 +293,130 @@ const send_message_to_customer = async (req, res) => {
   }
 };
 
+const get_sellers = async (req, res) => {
+  try {
+    const sellers = await sellerModel.find({});
+    responseReturn(res, 200, {sellers});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const seller_admin_messages = async (req, res) => {
+  const {senderId, message, receiverId, senderName} = req.body;
+
+  try {
+    const mess = await adminSellerMessage.create({
+      senderId,
+      receiverId,
+      message,
+      senderName,
+    });
+    responseReturn(res, 200, {message: mess});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const get_admin_message = async (req, res) => {
+  const {receiverId} = req.params;
+  const id = "";
+  try {
+    const messages = await adminSellerMessage.find({
+      $or: [
+        {
+          $and: [
+            {
+              receiverId: {
+                $eq: receiverId,
+              },
+            },
+            {
+              senderId: {
+                $eq: id,
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              receiverId: {
+                $eq: id,
+              },
+            },
+            {
+              senderId: {
+                $eq: receiverId,
+              },
+            },
+          ],
+        },
+      ],
+    });
+    let currentSeller = {};
+    if (receiverId) {
+      currentSeller = await sellerModel.findById(receiverId);
+    }
+    responseReturn(res, 200, {messages, currentSeller});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const get_seller_message = async (req, res) => {
+  const {id} = req;
+  const receiverId = "";
+  try {
+    const messages = await adminSellerMessage.find({
+      $or: [
+        {
+          $and: [
+            {
+              receiverId: {
+                $eq: receiverId,
+              },
+            },
+            {
+              senderId: {
+                $eq: id,
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              receiverId: {
+                $eq: id,
+              },
+            },
+            {
+              senderId: {
+                $eq: receiverId,
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    responseReturn(res, 200, {messages});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const chatController = {
   add_customer_friend,
   send_message_to_seller,
   get_customers,
   get_customer_message,
   send_message_to_customer,
+  get_sellers,
+  seller_admin_messages,
+  get_admin_message,
+  get_seller_message,
 };
 
 module.exports = chatController;
