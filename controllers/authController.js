@@ -183,6 +183,18 @@ const profile_info_add = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    res.cookie("accessToken", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+    responseReturn(res, 200, {msg: "Logout successfully", success: true});
+  } catch (error) {
+    responseReturn(res, 500, {error: error.message});
+  }
+};
+
 const authController = {
   admin_login,
   getUser,
@@ -190,6 +202,7 @@ const authController = {
   seller_login,
   profile_image_upload,
   profile_info_add,
+  logout,
 };
 
 module.exports = authController;

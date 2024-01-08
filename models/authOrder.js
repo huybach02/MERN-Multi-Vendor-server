@@ -24,7 +24,7 @@ var authorOrderSchema = new mongoose.Schema(
       required: true,
     },
     shippingInfo: {
-      type: String,
+      type: Object,
       required: true,
     },
     delivery_status: {

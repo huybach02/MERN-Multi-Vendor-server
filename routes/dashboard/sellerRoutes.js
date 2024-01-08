@@ -8,6 +8,12 @@ router.get(
   authMiddleware,
   sellerController.get_all_seller_request
 );
+router.get("/sellers", authMiddleware, sellerController.get_all_active_seller);
+router.get(
+  "/deactive-sellers",
+  authMiddleware,
+  sellerController.get_all_deactive_seller
+);
 router.get("/seller-get-one/:sellerId", sellerController.get_one_seller);
 router.post(
   "/seller-update-status",
