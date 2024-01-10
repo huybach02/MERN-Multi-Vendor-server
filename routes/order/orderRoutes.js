@@ -23,5 +23,7 @@ router.put(
   "/seller/order-status/update/:orderId",
   orderController.seller_update_status_order
 );
+router.post("/order/create-payment", orderController.create_payment);
+router.get("/order/confirm/:orderId", orderController.order_confirm);
 
 module.exports = router;

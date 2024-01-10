@@ -136,6 +136,7 @@ app.use("/api", require("./routes/dashboard/categoryRoutes"));
 app.use("/api", require("./routes/dashboard/productRoutes"));
 app.use("/api", require("./routes/dashboard/sellerRoutes"));
 app.use("/api", require("./routes/chatRoutes"));
+app.use("/api", require("./routes/paymentRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello");

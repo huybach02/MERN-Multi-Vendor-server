@@ -1,11 +1,17 @@
 const authorOrdersModel = require("../../models/authOrder");
 const customerOrderModel = require("../../models/customerOrderModel");
+const sellerWallet = require("../../models/sellerWallet");
+const myShopWallet = require("../../models/myShopWallet");
 const cartModel = require("../../models/cartModel");
 const moment = require("moment");
 const {responseReturn} = require("../../utils/response");
 const {
   mongo: {ObjectId},
 } = require("mongoose");
+
+const stripe = require("stripe")(
+  "sk_test_51OMmpZJMERio1zjvspXEw929Gtd54xQSF5edl3kxeFScVJRotKPjfM3PUA2ftdNWlWzKvVSBYroe7L5UGI99vi5k006dG0E4KR"
+);
 
 const paymentCheck = async (id) => {
   try {
@@ -300,6 +306,68 @@ const seller_update_status_order = async (req, res) => {
   }
 };
 
+const create_payment = async (req, res) => {
+  const {price} = req.body;
+
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount: price * 100,
+      currency: "usd",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+    responseReturn(res, 200, {clientSecret: payment.client_secret});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const order_confirm = async (req, res) => {
+  const {orderId} = req.params;
+
+  try {
+    await customerOrderModel.findByIdAndUpdate(orderId, {
+      payment_status: "Paid",
+      delivery_status: "Pending",
+    });
+    await authorOrdersModel.updateMany(
+      {
+        orderId: new ObjectId(orderId),
+      },
+      {
+        payment_status: "Paid",
+        delivery_status: "Pending",
+      }
+    );
+    const cusOrder = await customerOrderModel.findById(orderId);
+    const authOrder = await authorOrdersModel.find({
+      orderId: new ObjectId(orderId),
+    });
+    const time = moment(Date.now()).format("l");
+    const splitTime = time.split("/");
+
+    await myShopWallet.create({
+      amount: cusOrder.price,
+      month: splitTime[0],
+      year: splitTime[2],
+    });
+
+    for (let i = 0; i < authOrder.length; i++) {
+      await sellerWallet.create({
+        sellerId: authOrder[i].sellerId.toString(),
+        amount: authOrder[i].price,
+        month: splitTime[0],
+        year: splitTime[2],
+      });
+    }
+
+    responseReturn(res, 200, {msg: "Successfully"});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const cartController = {
   place_order,
   get_dashboard_data,
@@ -311,6 +379,8 @@ const cartController = {
   get_all_seller_orders,
   get_one_seller_order,
   seller_update_status_order,
+  create_payment,
+  order_confirm,
 };
 
 module.exports = cartController;
