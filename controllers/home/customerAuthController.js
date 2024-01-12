@@ -73,9 +73,17 @@ const customer_login = async (req, res) => {
   }
 };
 
+const customer_logout = async (req, res) => {
+  res.cookie("customerToken", "", {
+    expires: new Date(Date.now()),
+  });
+  responseReturn(res, 200, {msg: "Logout successfully"});
+};
+
 const customerAuthController = {
   customer_register,
   customer_login,
+  customer_logout,
 };
 
 module.exports = customerAuthController;
