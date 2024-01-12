@@ -111,7 +111,11 @@ const seller_register = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const {id, role} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
 
   try {
     if (role === "admin") {
