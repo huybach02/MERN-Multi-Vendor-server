@@ -3,7 +3,7 @@ const {authMiddleware} = require("../../middlewares/authMiddleware");
 
 const router = require("express").Router();
 
-router.get(
+router.post(
   "/seller/get-seller-dashboard-data",
   dashboardController.get_seller_dashboard_data
 );
