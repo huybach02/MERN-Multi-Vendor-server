@@ -25,8 +25,8 @@ const create_stripe_connect_account = async (req, res) => {
       const account = await stripe.accounts.create({type: "express"});
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
-        refresh_url: "http://localhost:3001/refresh",
-        return_url: `http://localhost:3001/success?activeCode=${uid}`,
+        refresh_url: "https://mern-multi-vendor-dashboard.vercel.app/refresh",
+        return_url: `https://mern-multi-vendor-dashboard.vercel.app/success?activeCode=${uid}`,
         type: "account_onboarding",
       });
       await stripeModel.create({
@@ -39,8 +39,8 @@ const create_stripe_connect_account = async (req, res) => {
       const account = await stripe.accounts.create({type: "express"});
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
-        refresh_url: "http://localhost:3001/refresh",
-        return_url: `http://localhost:3001/success?activeCode=${uid}`,
+        refresh_url: "https://mern-multi-vendor-dashboard.vercel.app/refresh",
+        return_url: `https://mern-multi-vendor-dashboard.vercel.app/success?activeCode=${uid}`,
         type: "account_onboarding",
       });
       await stripeModel.create({

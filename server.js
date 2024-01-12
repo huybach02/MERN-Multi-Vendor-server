@@ -14,7 +14,10 @@ const server = http.createServer(app);
 const PORT = process.env.PORT;
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      "https://mern-multi-vendor-client.vercel.app",
+      "https://mern-multi-vendor-dashboard.vercel.app",
+    ],
     credentials: true,
   })
 );
