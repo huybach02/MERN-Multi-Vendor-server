@@ -20,9 +20,9 @@ const admin_login = async (req, res) => {
           role: admin.role,
         });
         res.cookie("accessToken", token, {
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           httpOnly: true,
           path: "/",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
         });
         responseReturn(res, 200, {token, success: true, msg: "Login success"});
       } else {
@@ -54,9 +54,9 @@ const seller_login = async (req, res) => {
           role: seller.role,
         });
         res.cookie("accessToken", token, {
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           httpOnly: true,
           path: "/",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
         });
         responseReturn(res, 200, {token, success: true, msg: "Login success"});
       } else {
@@ -95,9 +95,9 @@ const seller_register = async (req, res) => {
       });
       const token = await createToken({id: seller._id, role: seller.role});
       res.cookie("accessToken", token, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         httpOnly: true,
         path: "/",
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
       });
       responseReturn(res, 201, {
         msg: "Register successfully",
