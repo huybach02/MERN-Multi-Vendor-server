@@ -6,12 +6,6 @@ const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
 
 const add_product = async (req, res) => {
-  const {accessToken} = req.params;
-
-  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
-
-  const {role, id} = decodeToken;
-
   const form = formidable({multiples: true});
   form.parse(req, async (err, field, files) => {
     const {
@@ -23,9 +17,14 @@ const add_product = async (req, res) => {
       description,
       category,
       shopName,
+      accessToken,
     } = field;
     const {images} = files;
     const slug = slugify(name, {lower: true});
+
+    const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+    const {role, id} = decodeToken;
 
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_NAME,
