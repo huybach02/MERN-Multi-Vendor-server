@@ -90,9 +90,90 @@ const get_category = async (req, res) => {
   }
 };
 
+const get_one_category = async (req, res) => {
+  const {categoryId} = req.params;
+
+  try {
+    const category = await categoryModel.findById(categoryId);
+    responseReturn(res, 200, {category});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const update_category = async (req, res) => {
+  const {categoryId} = req.params;
+
+  const form = formidable({});
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      responseReturn(res, 404, {error: "Something went wrong"});
+    } else {
+      const {name, oldImage} = fields;
+      const {newImage} = files;
+      const slug = slugify(name, {lower: true});
+
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true,
+      });
+
+      try {
+        if (newImage !== undefined) {
+          const result = await cloudinary.uploader.upload(newImage.filepath, {
+            folder: "categories",
+          });
+          if (result) {
+            const category = await categoryModel.findByIdAndUpdate(categoryId, {
+              name,
+              slug,
+              image: result.url,
+            });
+            responseReturn(res, 201, {
+              msg: "Update category successfully",
+              success: true,
+              category,
+            });
+          } else {
+            responseReturn(res, 404, {error: "Upload image failed"});
+          }
+        } else {
+          const category = await categoryModel.findByIdAndUpdate(categoryId, {
+            name,
+            slug,
+          });
+          responseReturn(res, 201, {
+            msg: "Update category successfully",
+            success: true,
+            category,
+          });
+        }
+      } catch (error) {
+        responseReturn(res, 500, {error: "Something went wrong"});
+      }
+    }
+  });
+};
+
+const delete_category = async (req, res) => {
+  const {categoryId} = req.params;
+
+  try {
+    await categoryModel.findByIdAndDelete(categoryId);
+    responseReturn(res, 200, {msg: "Delete category successfully"});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const categoryController = {
   add_category,
   get_category,
+  get_one_category,
+  update_category,
+  delete_category,
 };
 
 module.exports = categoryController;
