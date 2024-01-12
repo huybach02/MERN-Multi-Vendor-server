@@ -3,9 +3,14 @@ const {formidable} = require("formidable");
 const {responseReturn} = require("../../utils/response");
 const slugify = require("slugify");
 const cloudinary = require("cloudinary").v2;
+const jwt = require("jsonwebtoken");
 
 const add_product = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
 
   const form = formidable({multiples: true});
   form.parse(req, async (err, field, files) => {
@@ -64,7 +69,11 @@ const add_product = async (req, res) => {
 };
 
 const get_all_products = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
   const {page, searchValue, parPage} = req.query;
   const skipPage = +parPage * (+page - 1);
 

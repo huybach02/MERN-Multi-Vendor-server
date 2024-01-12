@@ -1,5 +1,6 @@
 const sellerModel = require("../../models/sellerModel");
 const {responseReturn} = require("../../utils/response");
+const jwt = require("jsonwebtoken");
 
 const get_all_seller_request = async (req, res) => {
   const {page, searchValue, parPage} = req.query;

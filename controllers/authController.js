@@ -135,7 +135,11 @@ const getUser = async (req, res) => {
 };
 
 const profile_image_upload = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
   const form = formidable({multiples: true});
   form.parse(req, async (err, field, files) => {
     const {image} = files;
@@ -170,7 +174,11 @@ const profile_image_upload = async (req, res) => {
 };
 
 const profile_info_add = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
   const {shopName, division, district, sub_district, phone} = req.body;
 
   try {

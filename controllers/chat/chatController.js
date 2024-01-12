@@ -4,6 +4,7 @@ const sellerToCustomerModel = require("../../models/chat/sellerToCustomerModel")
 const sellerCustomerMessage = require("../../models/chat/sellerCustomerMessage");
 const adminSellerMessage = require("../../models/chat/adminSellerMessage");
 const {responseReturn} = require("../../utils/response");
+const jwt = require("jsonwebtoken");
 
 const add_customer_friend = async (req, res) => {
   const {sellerId, userId} = req.body;
@@ -193,7 +194,11 @@ const get_customers = async (req, res) => {
 
 const get_customer_message = async (req, res) => {
   const {customerId} = req.params;
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
 
   try {
     const messages = await sellerCustomerMessage.find({
@@ -365,7 +370,11 @@ const get_admin_message = async (req, res) => {
 };
 
 const get_seller_message = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
   const receiverId = "";
   try {
     const messages = await adminSellerMessage.find({

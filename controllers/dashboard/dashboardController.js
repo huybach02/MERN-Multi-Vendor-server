@@ -10,9 +10,14 @@ const {
   mongo: {ObjectId},
 } = require("mongoose");
 const {responseReturn} = require("../../utils/response");
+const jwt = require("jsonwebtoken");
 
 const get_seller_dashboard_data = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
 
   try {
     const totalSales = await sellerWallet.aggregate([

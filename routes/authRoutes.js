@@ -7,16 +7,8 @@ router.post("/admin-login", authController.admin_login);
 router.post("/get-user", authController.getUser);
 router.post("/seller-register", authController.seller_register);
 router.post("/seller-login", authController.seller_login);
-router.post(
-  "/profile-image-upload",
-  authMiddleware,
-  authController.profile_image_upload
-);
-router.post(
-  "/profile-info-add",
-  authMiddleware,
-  authController.profile_info_add
-);
-router.get("/logout", authMiddleware, authController.logout);
+router.post("/profile-image-upload", authController.profile_image_upload);
+router.post("/profile-info-add", authController.profile_info_add);
+router.get("/logout", authController.logout);
 
 module.exports = router;

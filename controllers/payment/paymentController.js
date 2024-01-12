@@ -9,13 +9,18 @@ const moment = require("moment");
 const {
   mongo: {ObjectId},
 } = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const stripe = require("stripe")(
   "sk_test_51OMmpZJMERio1zjvspXEw929Gtd54xQSF5edl3kxeFScVJRotKPjfM3PUA2ftdNWlWzKvVSBYroe7L5UGI99vi5k006dG0E4KR"
 );
 
 const create_stripe_connect_account = async (req, res) => {
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
   const uid = uuidV4();
 
   try {
@@ -57,7 +62,11 @@ const create_stripe_connect_account = async (req, res) => {
 
 const active_stripe_connect_account = async (req, res) => {
   const {activeCode} = req.params;
-  const {id} = req;
+  const {accessToken} = req.body;
+
+  const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
+
+  const {role, id} = decodeToken;
 
   try {
     const userStripeInfo = await stripeModel.findOne({code: activeCode});

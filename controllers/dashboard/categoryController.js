@@ -3,6 +3,7 @@ const {formidable} = require("formidable");
 const {responseReturn} = require("../../utils/response");
 const slugify = require("slugify");
 const cloudinary = require("cloudinary").v2;
+const jwt = require("jsonwebtoken");
 
 const add_category = async (req, res) => {
   const form = formidable({});
