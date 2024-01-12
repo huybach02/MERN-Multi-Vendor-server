@@ -6,7 +6,7 @@ const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
 
 const add_product = async (req, res) => {
-  const {accessToken} = req.body;
+  const {accessToken} = req.params;
 
   const decodeToken = await jwt.verify(accessToken, process.env.SECRET_KEY);
 

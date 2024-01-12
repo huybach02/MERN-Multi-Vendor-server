@@ -3,7 +3,7 @@ const {authMiddleware} = require("../../middlewares/authMiddleware");
 
 const router = require("express").Router();
 
-router.post("/product-add", productController.add_product);
+router.post("/product-add/:accessToken", productController.add_product);
 router.post("/product-get-all", productController.get_all_products);
 router.get("/product-get-one/:productId", productController.get_one_product);
 router.post("/product-update", productController.update_product);
