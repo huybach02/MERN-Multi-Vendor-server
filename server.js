@@ -17,6 +17,7 @@ app.use(
     origin: [
       "https://mern-multi-vendor-client.vercel.app",
       "https://mern-multi-vendor-dashboard.vercel.app",
+      "https://cool-kashata-4ad6a4.netlify.app",
     ],
     credentials: true,
   })
