@@ -178,7 +178,7 @@ const update_product = async (req, res) => {
 
     try {
       let allImageUrl = [...oldImages];
-      if (newImages || newImages.length > 0) {
+      if (newImages) {
         if (newImages.length) {
           for (let i = 0; i < newImages.length; i++) {
             const result = await cloudinary.uploader.upload(
