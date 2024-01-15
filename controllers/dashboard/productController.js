@@ -177,7 +177,13 @@ const update_product = async (req, res) => {
     });
 
     try {
-      let allImageUrl = [...oldImages];
+      let allImageUrl = [];
+
+      if (typeof oldImages === "string") {
+        allImageUrl.push(oldImages);
+      } else {
+        allImageUrl = [...oldImages];
+      }
       if (newImages) {
         if (newImages.length) {
           for (let i = 0; i < newImages.length; i++) {
