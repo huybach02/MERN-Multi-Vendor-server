@@ -179,10 +179,12 @@ const update_product = async (req, res) => {
     try {
       let allImageUrl = [];
 
-      if (typeof oldImages === "string") {
-        allImageUrl.push(oldImages);
-      } else {
-        allImageUrl = [...oldImages];
+      if (oldImages) {
+        if (typeof oldImages === "string") {
+          allImageUrl.push(oldImages);
+        } else {
+          allImageUrl = [...oldImages];
+        }
       }
       if (newImages) {
         if (newImages.length) {
